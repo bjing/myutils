@@ -24,7 +24,7 @@ class Flog_Merger(object):
         try:
             self._avro_files = filter(lambda x: x.endswith(self._avro_extention), iter(os.listdir(path)))
             schema = avro.schema.parse(open(schema_file).read())
-            self._writter = DataFileWritter(open(output_file, 'w'), DatumWriter(), schema, 'deflate')
+            self._writter = DataFileWriter(open(output_file, 'w'), DatumWriter(), schema, 'deflate')
         except Exception as e:
             raise avro.schema.AvroException(e)
             sys.exit(1)
@@ -79,5 +79,5 @@ if __name__ == '__main__':
     path = None
     new_filename = None
 
-    fm = FlogMerger(path, new_filename)
+    fm = Flog_Merger(path, new_filename)
     fm.merge()
