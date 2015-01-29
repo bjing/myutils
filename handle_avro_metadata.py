@@ -14,7 +14,7 @@ and I have not bothered to clean up the code at all.
 Use this as a template if you need to merge avro files.
 """
 
-class Flog_Merger(object):
+class Avro_Merger(object):
     _merge_started = False
     _avro_extention = '.avro'
     _avro_stats_record = None
@@ -79,5 +79,5 @@ if __name__ == '__main__':
     path = None
     new_filename = None
 
-    fm = Flog_Merger(path, new_filename)
+    fm = Avro_Merger(path, new_filename)
     fm.merge()

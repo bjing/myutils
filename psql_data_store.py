@@ -1,11 +1,11 @@
-#!/opt/hwbp/usr/bin/python2.7
+#!/usr/bin/env python
 
 import sys
 import psycopg2
 import pprint
 from Logger import Logger
 
-class DataStore(object):
+class Data_Store(object):
 
     def __init__(self, db_host, db_name, db_port, db_user, db_pass=None, log_dir=None):
 
@@ -15,7 +15,7 @@ class DataStore(object):
         self._db_user = db_user
         self._db_pass = db_pass
 
-        self._logger = Logger().get_logger('DataStore', log_dir)
+        self._logger = Logger().get_logger('Data_Store', log_dir)
         self._conn()
 
     def _conn(self):
