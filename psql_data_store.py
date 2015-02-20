@@ -7,27 +7,21 @@ from Logger import Logger
 
 class Data_Store(object):
 
-    def __init__(self, db_host, db_name, db_port, db_user, db_pass=None, log_dir=None):
-
-        self._db_host = db_host
-        self._db_name = db_name
-        self._db_port = db_port
-        self._db_user = db_user
-        self._db_pass = db_pass
-
-        self._logger = Logger().get_logger('Data_Store', log_dir)
+    def __init__(self, db_info, log_dir=None):
+        self.__db_info = db_info
+        self._logger = utils.get_logger('DataStore', log_dir)
         self._conn()
 
     def _conn(self):
         """ Connect to the DB
         """
-        if self._db_pass is None:
-            conn_str = "dbname='%s' user='%s' host='%s'" % (self._db_name, self._db_user, self._db_host)
+        if self.__db_info['password'] is None:
+            conn_str = "dbname='{dbname}' user='{user}' host='{host}'".format(**self.__db_info)
         else:
-            conn_str = "dbname='%s' user='%s' host='%s' password='%s'" % (self._db_name, self._db_user, self._db_host, self._db_pass)
+            conn_str = "dbname='{dbname}' user='{user}' host='{host}' password='{password}'".format(**self.__db_info)
 
         try:
-            self._logger.info('Establing connection to "%s" on "%s" as "%s" user' % (self._db_name, self._db_host, self._db_user))
+            self._logger.info('Establing connection to "{dbname}" on "{host}" as "{user}" user'.format(**self.__db_info))
             self._dbh = psycopg2.connect(conn_str)
             self._cursor = self._dbh.cursor()
             self._logger.info('Connection established.')
@@ -55,10 +49,11 @@ class Data_Store(object):
             self._logger.debug('Executing query: "%s"' % query)
 
             self._cursor.execute(query)
+            return (True, self._cursor)
         except Exception as e:
             self._logger.error('Error: %s' % e)
             self._logger.info('Error encountered, program interrupted')
-            sys.exit(1)
+            return (False, None)
 
     def execute_and_commit(self, query):
         """
@@ -72,10 +67,11 @@ class Data_Store(object):
 
             self._cursor.execute(query)
             self._dbh.commit()
+            return True
         except Exception as e:
             self._logger.error('Error: %s' % e)
-            self._logger.info('Error encountered, program interrupted')
-            sys.exit(1)
+            self._dbh.rollback()
+            return False
 
 
 if __name__ == "__main__":
